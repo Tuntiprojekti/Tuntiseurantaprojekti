@@ -12,7 +12,7 @@ function App() {
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h6">
-              Personal Training Application
+              Tuntiseuranta
             </Typography>
             <div style={{ marginLeft: '20px' }} /> 
             <Link to={"/"} style={{ marginLeft: '20px', marginRight: '20px' }}>Shifts</Link>{' '} 

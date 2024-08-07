@@ -3,8 +3,9 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { fi } from 'date-fns/locale';
 import { addDoc, collection } from "firebase/firestore";
-import { db } from '../config/firebase';
+import { db, auth } from '../config/firebase';
 import { Button } from "@mui/material";
+import { useAuth } from '../context/AuthContext';
 
 const AddShift = () => {
     const [shift, setShift] = useState('');
@@ -12,6 +13,7 @@ const AddShift = () => {
     const [hoursWorked, setHoursWorked] = useState('');
     const [date, setDate] = useState(null); // Datepicker state variable
     const baseSalaryPerHour = 10; // Base salary per hour
+    const { currentUser } = useAuth();
 
     const handleShiftChange = (event) => {
         setShift(event.target.value);
@@ -37,6 +39,11 @@ const AddShift = () => {
     };
 
     const handleSubmit = async () => {
+        if (!currentUser) {
+            alert("You must be signed in to add a shift.");
+            return;
+        }
+
         try {
             await addDoc(collection(db, "Shifts"), {
                 shift: shift,
@@ -44,6 +51,7 @@ const AddShift = () => {
                 hoursWorked: Number(hoursWorked),
                 date: date,
                 salary: calculateDailySalary(),
+                userId: currentUser.uid // Store the user ID
             });
             alert("Shift added successfully!");
             // Reset the form
@@ -120,13 +128,7 @@ const AddShift = () => {
             <div>
                 <Button onClick={handleSubmit}>Submit Shift</Button>
             </div>
-            <div>
-                <p>Selected Shift: {shift}</p>
-                <p>Place of Shift: {place}</p>
-                <p>Hours Worked: {hoursWorked}</p>
-                <p>Selected Date: {date ? date.toLocaleDateString('fi-FI') : ''}</p>
-                <p>Daily Salary: €{calculateDailySalary()}</p>
-            </div>
+            
         </div>
     );
 };

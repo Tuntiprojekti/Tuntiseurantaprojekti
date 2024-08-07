@@ -6,15 +6,29 @@ import Statistics from './Pages/Statistics.jsx';
 import AddShift from './Pages/AddShift.jsx';
 import { Auth } from './components/auth.jsx';
 import UserManagement from './Pages/UserManagement.jsx';
+import { AuthProvider } from './context/AuthContext';
+import PrivateRoute from './components/PrivateRoute';
 
 const router = (
   <HashRouter>
     <Routes>
       <Route path="/" element={<App />}>
-        <Route index element={<AddShift />} />
-        <Route path="statistics" element={<Statistics />} />
+        <Route index element={
+          <PrivateRoute>
+            <AddShift />
+          </PrivateRoute>
+        } />
+        <Route path="statistics" element={
+          <PrivateRoute>
+            <Statistics />
+          </PrivateRoute>
+        } />
         <Route path="auth" element={<Auth />} />
-        <Route path="users" element={<UserManagement />} />
+        <Route path="users" element={
+          <PrivateRoute>
+            <UserManagement />
+          </PrivateRoute>
+        } />
       </Route>
     </Routes>
   </HashRouter>
@@ -22,6 +36,8 @@ const router = (
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    {router}
+    <AuthProvider>
+      {router}
+    </AuthProvider>
   </React.StrictMode>
 );

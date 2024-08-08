@@ -22,6 +22,7 @@ export const Auth = () => {
     const login = async () => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
+            window.alert('Login in successful.')
         } catch (err) {
             console.error(err);
         }
@@ -38,6 +39,7 @@ export const Auth = () => {
     const logout = async () => {
         try {
             await signOut(auth);
+            window.alert('You have been logged out.')
         } catch (err) {
             console.error(err);
         }

@@ -73,7 +73,7 @@ export const Auth = () => {
             <Button onClick={register}>Register</Button>
             <Button onClick={login}>Login</Button>
             <Button onClick={signInWithGoogle}>Sign in With Google</Button>
-            <Button onClick={logout}>Logout</Button>
+            {/* <Button onClick={logout}>Logout</Button> */}
         </div>
     );
 };

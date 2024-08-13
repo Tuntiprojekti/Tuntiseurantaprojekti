@@ -5,6 +5,7 @@ import App from './App.jsx';
 import Statistics from './Pages/Statistics.jsx';
 import AddShift from './Pages/AddShift.jsx';
 import { Auth } from './components/auth.jsx';
+import { Register } from './components/Register.jsx';
 import UserManagement from './Pages/UserManagement.jsx';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
@@ -24,6 +25,7 @@ const router = (
           </PrivateRoute>
         } />
         <Route path="auth" element={<Auth />} />
+        <Route path="register" element={<Register />} /> {/* New route for registration */}
         <Route path="users" element={
           <PrivateRoute>
             <UserManagement />

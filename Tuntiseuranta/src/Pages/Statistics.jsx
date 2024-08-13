@@ -1,45 +1,56 @@
-import React from "react";
-import { useOutletContext } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../config/firebase';
+import { useAuth } from '../context/AuthContext';
 
 const Statistics = () => {
-  const { shifts } = useOutletContext();
+    const [shifts, setShifts] = useState([]);
+    const { currentUser } = useAuth();
 
-  if (!shifts) {
-    return <p>No shifts data available.</p>;
-  }
+    useEffect(() => {
+        const fetchShifts = async () => {
+            if (!currentUser) {
+                return;
+            }
 
-  const calculateTotalSalary = () => {
-    const isCurrentMonth = (date) => {
-      const now = new Date();
-      return (
-        date.getMonth() === now.getMonth() &&
-        date.getFullYear() === now.getFullYear()
-      );
-    };
+            const shiftsCollectionRef = collection(db, "Shifts");
+            const q = query(shiftsCollectionRef, where("userId", "==", currentUser.uid));
 
-    return shifts
-      .filter((shift) => shift.date && isCurrentMonth(shift.date))
-      .reduce((total, shift) => total + shift.dailySalary, 0);
-  };
+            try {
+                const querySnapshot = await getDocs(q);
+                const shiftsData = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                setShifts(shiftsData);
+            } catch (err) {
+                console.error("Error fetching shifts: ", err);
+            }
+        };
 
-  return (
-    <div>
-      <h2>Saved Shifts</h2>
-      <ul>
-        {shifts.map((shift, index) => (
-          <li key={index}>
-            {shift.date ? shift.date.toLocaleDateString("fi-FI") : ""} -{" "}
-            {shift.shift} shift at {shift.place}, Hours Worked:{" "}
-            {shift.hoursWorked}, Daily Salary: €{shift.dailySalary}
-          </li>
-        ))}
-      </ul>
-      <div>
-        <h2>Total Salary for Current Month</h2>
-        <p>€{calculateTotalSalary()}</p>
-      </div>
-    </div>
-  );
+        fetchShifts();
+    }, [currentUser]);
+
+    return (
+        <div>
+            <p>Stats Page</p>
+            {shifts.length > 0 ? (
+                <div>
+                    {shifts.map((shift) => (
+                        <div key={shift.id}>
+                            <p>Shift: {shift.shift}</p>
+                            <p>Place: {shift.place}</p>
+                            <p>Hours Worked: {shift.hoursWorked}</p>
+                            <p>Date: {shift.date ? new Date(shift.date.seconds * 1000).toLocaleDateString('fi-FI') : ''}</p>
+                            <p>Daily Salary: €{shift.salary}</p>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <p>No shifts found.</p>
+            )}
+        </div>
+    );
 };
 
 export default Statistics;

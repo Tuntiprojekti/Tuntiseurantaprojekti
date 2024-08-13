@@ -1,53 +1,53 @@
-import React, { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import { AppBar, CssBaseline, Toolbar, Typography } from "@mui/material";
+import { AppBar, CssBaseline, Toolbar, Typography, Button } from "@mui/material";
+import { useAuth } from './context/AuthContext';
+import { signOut } from 'firebase/auth';
+import { auth } from './config/firebase';
+import { useNavigate } from 'react-router-dom';
 
-const App = () => {
-  const [shifts, setShifts] = useState([
-    {
-      shift: "morning",
-      place: "Peijas",
-      hoursWorked: 8,
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-      dailySalary: 10 * 8,
-    },
-    {
-      shift: "day",
-      place: "Meilahti",
-      hoursWorked: 8,
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 2),
-      dailySalary: 12 * 8,
-    },
-    {
-      shift: "night",
-      place: "Jorvi",
-      hoursWorked: 8,
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 3),
-      dailySalary: 11 * 8 * 2,
-    },
-  ]);
+function App() {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      window.alert('You have been logged out.');
+      navigate('/auth'); // Redirect to the auth page after logout
+    } catch (err) {
+      console.error(err);
+      window.alert('An error occurred during logout. Please try again.');
+    }
+  };
 
   return (
     <>
-      <CssBaseline />
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6">Tuntiseuranta</Typography>
-          <div style={{ marginLeft: "20px" }} />
-          <Link to="/" style={{ marginLeft: "20px", marginRight: "20px" }}>
-            Shifts
-          </Link>
-          <Link
-            to="/statistics"
-            style={{ marginLeft: "20px", marginRight: "20px" }}
-          >
-            Statistics
-          </Link>
-        </Toolbar>
-      </AppBar>
-      <Outlet context={{ shifts, setShifts }} />
+      <nav>
+        <CssBaseline />
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6">Tuntiseuranta</Typography>
+            <div style={{ marginLeft: '20px' }} />
+            <Link to={"/"} style={{ marginLeft: '20px', marginRight: '20px' }}>Shifts</Link>
+            <Link to={"/statistics"} style={{ marginLeft: '20px', marginRight: '20px' }}>Statistics</Link>
+            {/* <Link to={"/auth"} style={{ marginLeft: '20px', marginRight: '20px' }}>Auth</Link> */}
+            <Link to={"/users"} style={{ marginLeft: '20px', marginRight: '20px' }}>User Management</Link>
+
+            {currentUser && (
+              <Button 
+                onClick={logout} 
+                color="inherit" 
+                style={{ marginLeft: 'auto' }} // Pushes the button to the right
+              >
+                Logout
+              </Button>
+            )}
+          </Toolbar>
+        </AppBar>
+        <Outlet />
+      </nav>
     </>
   );
-};
+}
 
 export default App;

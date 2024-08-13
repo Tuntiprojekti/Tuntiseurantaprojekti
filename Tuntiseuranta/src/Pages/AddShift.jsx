@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { fi } from 'date-fns/locale';
 import { addDoc, collection } from "firebase/firestore";
-import { db, auth } from '../config/firebase';
+import { db } from '../config/firebase';
 import { Button } from "@mui/material";
 import { useAuth } from '../context/AuthContext';
 

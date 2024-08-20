@@ -22,15 +22,7 @@ export const Auth = () => {
         }
     };
 
-    const signInWithGoogle = async () => {
-        try {
-            await signInWithPopup(auth, googleProvider);
-            window.alert('Sign in with Google successful.');
-        } catch (err) {
-            console.error(err);
-            window.alert('An error occurred during Google sign in. Please try again.');
-        }
-    };
+ 
 
     if (currentUser) {
         navigate('/');
@@ -72,14 +64,7 @@ export const Auth = () => {
                     >
                         Login
                     </Button>
-                    <Button 
-                        variant="outlined" 
-                        color="primary" 
-                        onClick={signInWithGoogle}
-                        fullWidth
-                    >
-                        Sign in with Google
-                    </Button>
+                    
                     <Typography variant="body2" align="center" sx={{ marginTop: 2 }}>
                         Don't have an account? 
                         <Link to="/register" style={{ textDecoration: 'none', color: '#3f51b5', marginLeft: '5px' }}>

@@ -1,7 +1,7 @@
 // src/components/Auth.jsx
 import { Button, TextField, Typography, Box, Paper } from "@mui/material";
-import { auth, googleProvider } from '../config/firebase';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { auth } from '../config/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from "react";
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';

@@ -8,34 +8,26 @@ import { Button } from "@mui/material";
 import { useAuth } from '../context/AuthContext';
 
 const AddShift = () => {
-    const [shift, setShift] = useState('');
     const [place, setPlace] = useState('');
-    const [hoursWorked, setHoursWorked] = useState('');
+    const [startTime, setStartTime] = useState(null);
+    const [endTime, setEndTime] = useState(null);
     const [date, setDate] = useState(null); // Datepicker state variable
     const baseSalaryPerHour = 10; // Base salary per hour
     const { currentUser } = useAuth();
-
-    const handleShiftChange = (event) => {
-        setShift(event.target.value);
-    };
 
     const handlePlaceChange = (event) => {
         setPlace(event.target.value);
     };
 
-    const handleHoursWorkedChange = (event) => {
-        setHoursWorked(event.target.value);
+    const calculateHoursWorked = () => {
+        if (!startTime || !endTime) return 0;
+        const diff = endTime - startTime; // difference in milliseconds
+        return diff / (1000 * 60 * 60); // convert to hours
     };
 
     const calculateDailySalary = () => {
-        if (!hoursWorked) {
-            return 0;
-        }
-        let multiplier = 1;
-        if (shift === 'night') {
-            multiplier = 2;
-        }
-        return baseSalaryPerHour * hoursWorked * multiplier;
+        const hoursWorked = calculateHoursWorked();
+        return baseSalaryPerHour * hoursWorked;
     };
 
     const handleSubmit = async () => {
@@ -44,20 +36,23 @@ const AddShift = () => {
             return;
         }
 
+        const hoursWorked = calculateHoursWorked();
+
         try {
             await addDoc(collection(db, "Shifts"), {
-                shift: shift,
+                startTime: startTime.toLocaleTimeString('fi-FI'),
+                endTime: endTime.toLocaleTimeString('fi-FI'),
                 place: place,
-                hoursWorked: Number(hoursWorked),
+                hoursWorked: hoursWorked,
                 date: date,
                 salary: calculateDailySalary(),
                 userId: currentUser.uid // Store the user ID
             });
             alert("Shift added successfully!");
             // Reset the form
-            setShift('');
             setPlace('');
-            setHoursWorked('');
+            setStartTime(null);
+            setEndTime(null);
             setDate(null);
         } catch (err) {
             console.error("Error adding document: ", err);
@@ -69,51 +64,10 @@ const AddShift = () => {
             <p>Add Shift Page</p>
             <div>
                 <input
-                    type="radio"
-                    id="morning"
-                    name="shift"
-                    value="morning"
-                    checked={shift === 'morning'}
-                    onChange={handleShiftChange}
-                />
-                <label htmlFor="morning">Morning Shift</label>
-            </div>
-            <div>
-                <input
-                    type="radio"
-                    id="day"
-                    name="shift"
-                    value="day"
-                    checked={shift === 'day'}
-                    onChange={handleShiftChange}
-                />
-                <label htmlFor="day">Day Shift</label>
-            </div>
-            <div>
-                <input
-                    type="radio"
-                    id="night"
-                    name="shift"
-                    value="night"
-                    checked={shift === 'night'}
-                    onChange={handleShiftChange}
-                />
-                <label htmlFor="night">Night Shift</label>
-            </div>
-            <div>
-                <input
                     type="text"
                     placeholder="Enter place of shift"
                     value={place}
                     onChange={handlePlaceChange}
-                />
-            </div>
-            <div>
-                <input
-                    type="number"
-                    placeholder="Enter hours worked"
-                    value={hoursWorked}
-                    onChange={handleHoursWorkedChange}
                 />
             </div>
             <div>
@@ -126,9 +80,34 @@ const AddShift = () => {
                 />
             </div>
             <div>
+                <DatePicker
+                    selected={startTime}
+                    onChange={(time) => setStartTime(time)}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={15}
+                    timeCaption="Start Time"
+                    dateFormat="HH:mm"
+                    placeholderText="Select start time"
+                    locale={fi}
+                />
+            </div>
+            <div>
+                <DatePicker
+                    selected={endTime}
+                    onChange={(time) => setEndTime(time)}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={15}
+                    timeCaption="End Time"
+                    dateFormat="HH:mm"
+                    placeholderText="Select end time"
+                    locale={fi}
+                />
+            </div>
+            <div>
                 <Button onClick={handleSubmit}>Submit Shift</Button>
             </div>
-            
         </div>
     );
 };

@@ -32,6 +32,7 @@ function App() {
             <Link to={"/statistics"} style={{ marginLeft: '20px', marginRight: '20px' }}>Statistics</Link>
             {/* <Link to={"/auth"} style={{ marginLeft: '20px', marginRight: '20px' }}>Auth</Link> */}
             <Link to={"/users"} style={{ marginLeft: '20px', marginRight: '20px' }}>User Management</Link>
+            <Link to={"/register"} style={{ marginLeft: '20px', marginRight: '20px' }}>Register</Link>
 
             {currentUser && (
               <Button 

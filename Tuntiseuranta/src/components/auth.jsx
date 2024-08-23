@@ -66,10 +66,8 @@ export const Auth = () => {
                     </Button>
                     
                     <Typography variant="body2" align="center" sx={{ marginTop: 2 }}>
-                        Don't have an account? 
-                        <Link to="/register" style={{ textDecoration: 'none', color: '#3f51b5', marginLeft: '5px' }}>
-                            Register here
-                        </Link>
+                        Don't have an account? Contact your admin for account access.
+                        
                     </Typography>
                 </Box>
             </Paper>

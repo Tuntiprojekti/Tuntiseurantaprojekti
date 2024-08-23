@@ -9,6 +9,7 @@ import { Register } from './components/Register.jsx';
 import UserManagement from './Pages/UserManagement.jsx';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import AdminRoute from './components/AdminRoute.jsx';
 
 const router = (
   <HashRouter>
@@ -24,20 +25,16 @@ const router = (
             <Statistics />
           </PrivateRoute>
         } />
-
-<Route path="register" element={
-          <PrivateRoute>
+        <Route path="register" element={
+          <AdminRoute> {/* Muokkaa tämä */}
             <Register />
-          </PrivateRoute>
+          </AdminRoute>
         } />
-
         <Route path="auth" element={<Auth />} />
-        <Route path="register" element={<Register />} /> {/* New route for registration */}
         <Route path="users" element={
           <PrivateRoute>
             <UserManagement />
           </PrivateRoute>
-          
         } />
       </Route>
     </Routes>

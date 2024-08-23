@@ -3,18 +3,25 @@ import { useState } from "react";
 import { Button, TextField, Typography, Box, Paper } from "@mui/material";
 import { auth } from '../config/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Lisää tämä rivi
 
 export const Register = () => {
+    const { isAdmin } = useAuth(); // Lisää tämä rivi
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
 
     const register = async () => {
+        if (!isAdmin) { // Lisää tämä tarkistus
+            window.alert('Only admins can register new users.');
+            return;
+        }
+
         try {
             await createUserWithEmailAndPassword(auth, email, password);
             window.alert('Registration successful.');
-            navigate('/'); // Redirect to the home or add shift page
+            navigate('/');
         } catch (err) {
             if (err.code === 'auth/email-already-in-use') {
                 window.alert('This email is already registered.');
@@ -61,12 +68,6 @@ export const Register = () => {
                     >
                         Register
                     </Button>
-                    <Typography variant="body2" align="center" sx={{ marginTop: 2 }}>
-                        Already have an account? 
-                        <Link to="/auth" style={{ textDecoration: 'none', color: '#3f51b5', marginLeft: '5px' }}>
-                            Sign in here
-                        </Link>
-                    </Typography>
                 </Box>
             </Paper>
         </Box>

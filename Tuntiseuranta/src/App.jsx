@@ -1,3 +1,4 @@
+// src/App.jsx
 import { Link, Outlet } from "react-router-dom";
 import { AppBar, CssBaseline, Toolbar, Typography, Button } from "@mui/material";
 import { useAuth } from './context/AuthContext';
@@ -6,7 +7,7 @@ import { auth } from './config/firebase';
 import { useNavigate } from 'react-router-dom';
 
 function App() {
-  const { currentUser } = useAuth();
+  const { currentUser, isAdmin } = useAuth(); // Lisää isAdmin tähän
   const navigate = useNavigate();
 
   const logout = async () => {
@@ -30,9 +31,11 @@ function App() {
             <div style={{ marginLeft: '20px' }} />
             <Link to={"/"} style={{ marginLeft: '20px', marginRight: '20px' }}>Shifts</Link>
             <Link to={"/statistics"} style={{ marginLeft: '20px', marginRight: '20px' }}>Statistics</Link>
-            {/* <Link to={"/auth"} style={{ marginLeft: '20px', marginRight: '20px' }}>Auth</Link> */}
             <Link to={"/users"} style={{ marginLeft: '20px', marginRight: '20px' }}>User Management</Link>
-            <Link to={"/register"} style={{ marginLeft: '20px', marginRight: '20px' }}>Register</Link>
+
+            {isAdmin && ( // Näytä rekisteröintilinkki vain adminille
+              <Link to={"/register"} style={{ marginLeft: '20px', marginRight: '20px' }}>Register</Link>
+            )}
 
             {currentUser && (
               <Button 

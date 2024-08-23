@@ -10,6 +10,7 @@ import UserManagement from './Pages/UserManagement.jsx';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute.jsx';
+import ManageWorkplaces from './components/ManageWorkplaces.jsx';
 
 const router = (
   <HashRouter>
@@ -30,6 +31,13 @@ const router = (
             <Register />
           </AdminRoute>
         } />
+
+<Route path="manageworkplaces" element={
+          <AdminRoute> {/* pelkkä admini näkymä */}
+            <ManageWorkplaces />
+          </AdminRoute>
+        } />
+
         <Route path="auth" element={<Auth />} />
         <Route path="users" element={
           <PrivateRoute>

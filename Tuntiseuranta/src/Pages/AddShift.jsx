@@ -1,19 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { fi } from 'date-fns/locale';
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from '../config/firebase';
-import { Button } from "@mui/material";
+import { Button, MenuItem, Select } from "@mui/material";
 import { useAuth } from '../context/AuthContext';
 
 const AddShift = () => {
     const [place, setPlace] = useState('');
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
-    const [date, setDate] = useState(null); // Datepicker state variable
-    const baseSalaryPerHour = 10; // Base salary per hour
+    const [date, setDate] = useState(null);
+    const [workplaces, setWorkplaces] = useState([]); // State for workplaces
+    const baseSalaryPerHour = 10; 
     const { currentUser } = useAuth();
+
+    useEffect(() => {
+        // Fetch workplaces from Firestore
+        const fetchWorkplaces = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, "Workplaces"));
+                const workplaceList = querySnapshot.docs.map(doc => doc.data().name);
+                setWorkplaces(workplaceList);
+            } catch (err) {
+                console.error("Error fetching workplaces: ", err);
+            }
+        };
+
+        fetchWorkplaces();
+    }, []);
 
     const handlePlaceChange = (event) => {
         setPlace(event.target.value);
@@ -21,8 +37,8 @@ const AddShift = () => {
 
     const calculateHoursWorked = () => {
         if (!startTime || !endTime) return 0;
-        const diff = endTime - startTime; // difference in milliseconds
-        return diff / (1000 * 60 * 60); // convert to hours
+        const diff = endTime - startTime;
+        return diff / (1000 * 60 * 60);
     };
 
     const calculateDailySalary = () => {
@@ -46,10 +62,9 @@ const AddShift = () => {
                 hoursWorked: hoursWorked,
                 date: date,
                 salary: calculateDailySalary(),
-                userId: currentUser.uid // Store the user ID
+                userId: currentUser.uid
             });
             alert("Shift added successfully!");
-            // Reset the form
             setPlace('');
             setStartTime(null);
             setEndTime(null);
@@ -63,12 +78,19 @@ const AddShift = () => {
         <div>
             <p>Add Shift Page</p>
             <div>
-                <input
-                    type="text"
-                    placeholder="Enter place of shift"
+                <Select
                     value={place}
                     onChange={handlePlaceChange}
-                />
+                    displayEmpty
+                    fullWidth
+                >
+                    <MenuItem value="" disabled>Select place of shift</MenuItem>
+                    {workplaces.map((workplace, index) => (
+                        <MenuItem key={index} value={workplace}>
+                            {workplace}
+                        </MenuItem>
+                    ))}
+                </Select>
             </div>
             <div>
                 <DatePicker

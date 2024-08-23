@@ -32,7 +32,7 @@ const router = (
         } />
 
         <Route path="auth" element={<Auth />} />
-        
+        <Route path="register" element={<Register />} /> {/* New route for registration */}
         <Route path="users" element={
           <PrivateRoute>
             <UserManagement />

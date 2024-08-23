@@ -34,7 +34,7 @@ function App() {
             <Link to={"/users"} style={{ marginLeft: '20px', marginRight: '20px' }}>User Management</Link>
 
             {isAdmin && ( // Näytä rekisteröintilinkki vain adminille
-              <Link to={"/register"} style={{ marginLeft: '20px', marginRight: '20px' }}>Register</Link>
+              <Link to={"/register"} style={{ marginLeft: '20px', marginRight: '20px' }}>Register new user</Link>
             )}
 
             {currentUser && (

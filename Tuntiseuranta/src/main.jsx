@@ -26,7 +26,7 @@ const router = (
           </PrivateRoute>
         } />
         <Route path="register" element={
-          <AdminRoute> {/* Muokkaa tämä */}
+          <AdminRoute> {/* pelkkä admini näkymä */}
             <Register />
           </AdminRoute>
         } />

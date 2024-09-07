@@ -4,7 +4,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { fi } from 'date-fns/locale';
 import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from '../config/firebase';
-import { Button, MenuItem, Select } from "@mui/material";
+import { Button, MenuItem, Select, Typography } from "@mui/material"; // Lisää Typography
 import { useAuth } from '../context/AuthContext';
 
 const AddShift = () => {
@@ -14,7 +14,7 @@ const AddShift = () => {
     const [date, setDate] = useState(null);
     const [workplaces, setWorkplaces] = useState([]); // State for workplaces
     const baseSalaryPerHour = 10; 
-    const { currentUser } = useAuth();
+    const { currentUser } = useAuth(); // Hakee käyttäjän tiedot
 
     useEffect(() => {
         // Fetch workplaces from Firestore
@@ -62,7 +62,8 @@ const AddShift = () => {
                 hoursWorked: hoursWorked,
                 date: date,
                 salary: calculateDailySalary(),
-                userId: currentUser.uid
+                userId: currentUser.uid, // Käyttäjän UID
+                userEmail: currentUser.email // Käyttäjän sähköposti
             });
             alert("Shift added successfully!");
             setPlace('');
@@ -76,7 +77,15 @@ const AddShift = () => {
 
     return (
         <div>
-            <p>Add Shift Page</p>
+            <Typography variant="h5">Add Shift Page</Typography>
+
+            {/* Näytä käyttäjän tunnus tai sähköposti */}
+            {currentUser && (
+                <Typography variant="subtitle1" style={{ marginBottom: '20px' }}>
+                    Logged in as: { currentUser.email}
+                </Typography>
+            )}
+
             <div>
                 <Select
                     value={place}
@@ -127,6 +136,7 @@ const AddShift = () => {
                     locale={fi}
                 />
             </div>
+            
             <div>
                 <Button onClick={handleSubmit}>Submit Shift</Button>
             </div>

@@ -15,6 +15,7 @@ export const Register = () => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
 
+
     const handleClickOpen = () => {
         setOpen(true)
     }

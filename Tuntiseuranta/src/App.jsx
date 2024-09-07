@@ -32,6 +32,7 @@ function App() {
             <Link to={"/"} style={{ marginLeft: '20px', marginRight: '20px' }}>Shifts</Link>
             <Link to={"/statistics"} style={{ marginLeft: '20px', marginRight: '20px' }}>Statistics</Link>
             <Link to={"/users"} style={{ marginLeft: '20px', marginRight: '20px' }}>User Management</Link>
+            <Link to={"/calendar"} style={{ marginLeft: '20px', marginRight: '20px' }}>Calendar</Link>
 
             {isAdmin && ( // Näytä rekisteröintilinkki vain adminille
             <>

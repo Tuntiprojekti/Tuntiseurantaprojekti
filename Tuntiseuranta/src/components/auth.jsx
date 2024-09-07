@@ -1,8 +1,9 @@
-import { Button } from "@mui/material";
-import { auth, googleProvider } from '../config/firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
+// src/components/Auth.jsx
+import { Button, TextField, Typography, Box, Paper } from "@mui/material";
+import { auth } from '../config/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export const Auth = () => {
@@ -10,20 +11,6 @@ export const Auth = () => {
     const [password, setPassword] = useState("");
     const { currentUser } = useAuth();
     const navigate = useNavigate();
-
-    const register = async () => {
-        try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            window.alert('Registration successful.');
-        } catch (err) {
-            if (err.code === 'auth/email-already-in-use') {
-                window.alert('This email is already registered.');
-            } else {
-                console.error(err);
-                window.alert('An error occurred during registration. Please try again.');
-            }
-        }
-    };
 
     const login = async () => {
         try {
@@ -35,45 +22,55 @@ export const Auth = () => {
         }
     };
 
-    const signInWithGoogle = async () => {
-        try {
-            await signInWithPopup(auth, googleProvider);
-            window.alert('Sign in with Google successful.');
-        } catch (err) {
-            console.error(err);
-            window.alert('An error occurred during Google sign in. Please try again.');
-        }
-    };
-
-    const logout = async () => {
-        try {
-            await signOut(auth);
-            window.alert('You have been logged out.');
-        } catch (err) {
-            console.error(err);
-            window.alert('An error occurred during logout. Please try again.');
-        }
-    };
+ 
 
     if (currentUser) {
         navigate('/');
     }
 
     return (
-        <div>
-            <input 
-                placeholder="Email..." 
-                onChange={(e) => setEmail(e.target.value)}
-            />
-            <input 
-                placeholder="Password..."
-                type="password"
-                onChange={(e) => setPassword(e.target.value)}
-            />
-            <Button onClick={register}>Register</Button>
-            <Button onClick={login}>Login</Button>
-            <Button onClick={signInWithGoogle}>Sign in With Google</Button>
-            {/* <Button onClick={logout}>Logout</Button> */}
-        </div>
+        <Box 
+            display="flex" 
+            justifyContent="center" 
+            alignItems="center" 
+            height="100vh"
+            bgcolor="#f5f5f5"
+        >
+            <Paper elevation={3} sx={{ padding: 4, maxWidth: 400, width: '100%' }}>
+                <Typography variant="h5" component="h1" gutterBottom>
+                    Login to Your Account
+                </Typography>
+                <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <TextField 
+                        label="Email" 
+                        variant="outlined" 
+                        fullWidth 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <TextField 
+                        label="Password" 
+                        variant="outlined" 
+                        type="password" 
+                        fullWidth 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <Button 
+                        variant="contained" 
+                        color="primary" 
+                        onClick={login}
+                        fullWidth
+                    >
+                        Login
+                    </Button>
+                    
+                    <Typography variant="body2" align="center" sx={{ marginTop: 2 }}>
+                        Don't have an account? Contact your admin for account access.
+                        
+                    </Typography>
+                </Box>
+            </Paper>
+        </Box>
     );
 };

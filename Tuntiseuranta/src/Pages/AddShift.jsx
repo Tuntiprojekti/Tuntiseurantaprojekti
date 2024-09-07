@@ -1,41 +1,49 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { fi } from 'date-fns/locale';
-import { addDoc, collection } from "firebase/firestore";
-import { db, auth } from '../config/firebase';
-import { Button } from "@mui/material";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from '../config/firebase';
+import { Button, MenuItem, Select } from "@mui/material";
 import { useAuth } from '../context/AuthContext';
 
 const AddShift = () => {
-    const [shift, setShift] = useState('');
     const [place, setPlace] = useState('');
-    const [hoursWorked, setHoursWorked] = useState('');
-    const [date, setDate] = useState(null); // Datepicker state variable
-    const baseSalaryPerHour = 10; // Base salary per hour
+    const [startTime, setStartTime] = useState(null);
+    const [endTime, setEndTime] = useState(null);
+    const [date, setDate] = useState(null);
+    const [workplaces, setWorkplaces] = useState([]); // State for workplaces
+    const baseSalaryPerHour = 10; 
     const { currentUser } = useAuth();
 
-    const handleShiftChange = (event) => {
-        setShift(event.target.value);
-    };
+    useEffect(() => {
+        // Fetch workplaces from Firestore
+        const fetchWorkplaces = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, "Workplaces"));
+                const workplaceList = querySnapshot.docs.map(doc => doc.data().name);
+                setWorkplaces(workplaceList);
+            } catch (err) {
+                console.error("Error fetching workplaces: ", err);
+            }
+        };
+
+        fetchWorkplaces();
+    }, []);
 
     const handlePlaceChange = (event) => {
         setPlace(event.target.value);
     };
 
-    const handleHoursWorkedChange = (event) => {
-        setHoursWorked(event.target.value);
+    const calculateHoursWorked = () => {
+        if (!startTime || !endTime) return 0;
+        const diff = endTime - startTime;
+        return diff / (1000 * 60 * 60);
     };
 
     const calculateDailySalary = () => {
-        if (!hoursWorked) {
-            return 0;
-        }
-        let multiplier = 1;
-        if (shift === 'night') {
-            multiplier = 2;
-        }
-        return baseSalaryPerHour * hoursWorked * multiplier;
+        const hoursWorked = calculateHoursWorked();
+        return baseSalaryPerHour * hoursWorked;
     };
 
     const handleSubmit = async () => {
@@ -44,20 +52,22 @@ const AddShift = () => {
             return;
         }
 
+        const hoursWorked = calculateHoursWorked();
+
         try {
             await addDoc(collection(db, "Shifts"), {
-                shift: shift,
+                startTime: startTime.toLocaleTimeString('fi-FI'),
+                endTime: endTime.toLocaleTimeString('fi-FI'),
                 place: place,
-                hoursWorked: Number(hoursWorked),
+                hoursWorked: hoursWorked,
                 date: date,
                 salary: calculateDailySalary(),
-                userId: currentUser.uid // Store the user ID
+                userId: currentUser.uid
             });
             alert("Shift added successfully!");
-            // Reset the form
-            setShift('');
             setPlace('');
-            setHoursWorked('');
+            setStartTime(null);
+            setEndTime(null);
             setDate(null);
         } catch (err) {
             console.error("Error adding document: ", err);
@@ -68,53 +78,19 @@ const AddShift = () => {
         <div>
             <p>Add Shift Page</p>
             <div>
-                <input
-                    type="radio"
-                    id="morning"
-                    name="shift"
-                    value="morning"
-                    checked={shift === 'morning'}
-                    onChange={handleShiftChange}
-                />
-                <label htmlFor="morning">Morning Shift</label>
-            </div>
-            <div>
-                <input
-                    type="radio"
-                    id="day"
-                    name="shift"
-                    value="day"
-                    checked={shift === 'day'}
-                    onChange={handleShiftChange}
-                />
-                <label htmlFor="day">Day Shift</label>
-            </div>
-            <div>
-                <input
-                    type="radio"
-                    id="night"
-                    name="shift"
-                    value="night"
-                    checked={shift === 'night'}
-                    onChange={handleShiftChange}
-                />
-                <label htmlFor="night">Night Shift</label>
-            </div>
-            <div>
-                <input
-                    type="text"
-                    placeholder="Enter place of shift"
+                <Select
                     value={place}
                     onChange={handlePlaceChange}
-                />
-            </div>
-            <div>
-                <input
-                    type="number"
-                    placeholder="Enter hours worked"
-                    value={hoursWorked}
-                    onChange={handleHoursWorkedChange}
-                />
+                    displayEmpty
+                    fullWidth
+                >
+                    <MenuItem value="" disabled>Select place of shift</MenuItem>
+                    {workplaces.map((workplace, index) => (
+                        <MenuItem key={index} value={workplace}>
+                            {workplace}
+                        </MenuItem>
+                    ))}
+                </Select>
             </div>
             <div>
                 <DatePicker
@@ -126,9 +102,34 @@ const AddShift = () => {
                 />
             </div>
             <div>
+                <DatePicker
+                    selected={startTime}
+                    onChange={(time) => setStartTime(time)}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={15}
+                    timeCaption="Start Time"
+                    dateFormat="HH:mm"
+                    placeholderText="Select start time"
+                    locale={fi}
+                />
+            </div>
+            <div>
+                <DatePicker
+                    selected={endTime}
+                    onChange={(time) => setEndTime(time)}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={15}
+                    timeCaption="End Time"
+                    dateFormat="HH:mm"
+                    placeholderText="Select end time"
+                    locale={fi}
+                />
+            </div>
+            <div>
                 <Button onClick={handleSubmit}>Submit Shift</Button>
             </div>
-            
         </div>
     );
 };

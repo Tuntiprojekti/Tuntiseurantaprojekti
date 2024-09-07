@@ -11,6 +11,7 @@ import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute.jsx';
 import ManageWorkplaces from './components/ManageWorkplaces.jsx';
+import Calendar from './Pages/Calendar.jsx';
 
 const router = (
   <HashRouter>
@@ -24,6 +25,12 @@ const router = (
         <Route path="statistics" element={
           <PrivateRoute>
             <Statistics />
+          </PrivateRoute>
+        } />
+
+<Route path="calendar" element={
+          <PrivateRoute>
+            <Calendar />
           </PrivateRoute>
         } />
         <Route path="register" element={

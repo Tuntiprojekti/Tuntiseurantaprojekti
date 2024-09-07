@@ -6,7 +6,7 @@ const AdminRoute = ({ children }) => {
     const { currentUser, isAdmin } = useAuth();
 
     if (!currentUser || !isAdmin) {
-        return <Navigate to="/" />;
+        return <Navigate to="/register" />;
     }
 
     return children;

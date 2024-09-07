@@ -9,8 +9,10 @@ import { useAuth } from '../context/AuthContext';
 
 const AddShift = () => {
     const [place, setPlace] = useState('');
-    const [startTime, setStartTime] = useState(null);
-    const [endTime, setEndTime] = useState(null);
+    const [startHour, setStartHour] = useState(null);
+    const [startMinute, setStartMinute] = useState(null);
+    const [endHour, setEndHour] = useState(null);
+    const [endMinute, setEndMinute] = useState(null);
     const [date, setDate] = useState(null);
     const [workplaces, setWorkplaces] = useState([]); // State for workplaces
     const baseSalaryPerHour = 10; 
@@ -36,10 +38,17 @@ const AddShift = () => {
     };
 
     const calculateHoursWorked = () => {
-        if (!startTime || !endTime) return 0;
+        if (startHour === null || startMinute === null || endHour === null || endMinute === null) return 0;
+        const startTime = new Date(date);
+        startTime.setHours(startHour, startMinute);
+
+        const endTime = new Date(date);
+        endTime.setHours(endHour, endMinute);
+
         const diff = endTime - startTime;
         return diff / (1000 * 60 * 60);
     };
+
 
     const calculateDailySalary = () => {
         const hoursWorked = calculateHoursWorked();
@@ -56,8 +65,8 @@ const AddShift = () => {
 
         try {
             await addDoc(collection(db, "Shifts"), {
-                startTime: startTime.toLocaleTimeString('fi-FI'),
-                endTime: endTime.toLocaleTimeString('fi-FI'),
+                startTime: `${startHour}:${startMinute < 10 ? `0${startMinute}` : startMinute}`,
+                endTime: `${endHour}:${endMinute < 10 ? `0${endMinute}` : endMinute}`,
                 place: place,
                 hoursWorked: hoursWorked,
                 date: date,
@@ -67,13 +76,19 @@ const AddShift = () => {
             });
             alert("Shift added successfully!");
             setPlace('');
-            setStartTime(null);
-            setEndTime(null);
+            setStartHour(null);
+            setStartMinute(null);
+            setEndHour(null);
+            setEndMinute(null);
             setDate(null);
         } catch (err) {
             console.error("Error adding document: ", err);
         }
     };
+
+    const hourOptions = [...Array(24).keys()]; // 0-23 tunnit
+    const minuteOptions = [...Array(60).keys()]; // 0-59 minuutit
+
 
     return (
         <div>
@@ -111,32 +126,63 @@ const AddShift = () => {
                 />
             </div>
             <div>
-                <DatePicker
-                    selected={startTime}
-                    onChange={(time) => setStartTime(time)}
-                    showTimeSelect
-                    showTimeSelectOnly
-                    timeIntervals={15}
-                    timeCaption="Start Time"
-                    dateFormat="HH:mm"
-                    placeholderText="Select start time"
-                    locale={fi}
-                />
+                <Typography>Start Time</Typography>
+                <Select
+                    value={startHour}
+                    onChange={(e) => setStartHour(e.target.value)}
+                    displayEmpty
+                >
+                    <MenuItem value="" disabled>Select hour</MenuItem>
+                    {hourOptions.map((hour) => (
+                        <MenuItem key={hour} value={hour}>
+                            {hour < 10 ? `0${hour}` : hour}
+                        </MenuItem>
+                    ))}
+                </Select>
+
+                <Select
+                    value={startMinute}
+                    onChange={(e) => setStartMinute(e.target.value)}
+                    displayEmpty
+                >
+                    <MenuItem value="" disabled>Select minute</MenuItem>
+                    {minuteOptions.map((minute) => (
+                        <MenuItem key={minute} value={minute}>
+                            {minute < 10 ? `0${minute}` : minute}
+                        </MenuItem>
+                    ))}
+                </Select>
             </div>
+
             <div>
-                <DatePicker
-                    selected={endTime}
-                    onChange={(time) => setEndTime(time)}
-                    showTimeSelect
-                    showTimeSelectOnly
-                    timeIntervals={15}
-                    timeCaption="End Time"
-                    dateFormat="HH:mm"
-                    placeholderText="Select end time"
-                    locale={fi}
-                />
+                <Typography>End Time</Typography>
+                <Select
+                    value={endHour}
+                    onChange={(e) => setEndHour(e.target.value)}
+                    displayEmpty
+                >
+                    <MenuItem value="" disabled>Select hour</MenuItem>
+                    {hourOptions.map((hour) => (
+                        <MenuItem key={hour} value={hour}>
+                            {hour < 10 ? `0${hour}` : hour}
+                        </MenuItem>
+                    ))}
+                </Select>
+
+                <Select
+                    value={endMinute}
+                    onChange={(e) => setEndMinute(e.target.value)}
+                    displayEmpty
+                >
+                    <MenuItem value="" disabled>Select minute</MenuItem>
+                    {minuteOptions.map((minute) => (
+                        <MenuItem key={minute} value={minute}>
+                            {minute < 10 ? `0${minute}` : minute}
+                        </MenuItem>
+                    ))}
+                </Select>
             </div>
-            
+
             <div>
                 <Button onClick={handleSubmit}>Submit Shift</Button>
             </div>

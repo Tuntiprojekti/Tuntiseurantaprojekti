@@ -31,14 +31,15 @@ function App() {
             <div style={{ marginLeft: '20px' }} />
             <Link to={"/"} style={{ marginLeft: '20px', marginRight: '20px' }}>Shifts</Link>
             <Link to={"/statistics"} style={{ marginLeft: '20px', marginRight: '20px' }}>Statistics</Link>
-            <Link to={"/users"} style={{ marginLeft: '20px', marginRight: '20px' }}>User Management</Link>
             <Link to={"/calendar"} style={{ marginLeft: '20px', marginRight: '20px' }}>Calendar</Link>
 
             {isAdmin && ( // Näytä rekisteröintilinkki vain adminille
             <>
             
               <Link to={"/register"} style={{ marginLeft: '20px', marginRight: '20px' }}>Register new user</Link>
-              <Link to={"/manageworkplaces"} style={{ marginLeft: '20px', marginRight: '20px' }}>Manage Workplaces</Link> 
+              <Link to={"/manageworkplaces"} style={{ marginLeft: '20px', marginRight: '20px' }}>Manage Workplaces</Link>
+              <Link to={"/admin/users"} style={{ marginLeft: '20px', marginRight: '20px' }}>List of Users</Link>
+               
               </>
               
             )}

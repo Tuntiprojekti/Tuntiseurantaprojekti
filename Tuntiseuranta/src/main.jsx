@@ -12,6 +12,7 @@ import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute.jsx';
 import ManageWorkplaces from './components/ManageWorkplaces.jsx';
 import Calendar from './Pages/Calendar.jsx';
+import UserList from './Pages/UserList.jsx';
 
 const router = (
   <HashRouter>
@@ -28,30 +29,37 @@ const router = (
           </PrivateRoute>
         } />
 
-<Route path="calendar" element={
+      <Route path="calendar" element={
           <PrivateRoute>
             <Calendar />
           </PrivateRoute>
-        } />
-        <Route path="register" element={
+      } />
+      <Route path="register" element={
           <AdminRoute> {/* pelkkä admini näkymä */}
             <Register />
           </AdminRoute>
-        } />
+      } />
 
-<Route path="manageworkplaces" element={
+      <Route path="manageworkplaces" element={
           <AdminRoute> {/* pelkkä admini näkymä */}
             <ManageWorkplaces />
           </AdminRoute>
-        } />
+      } />
 
-        <Route path="auth" element={<Auth />} />
+      <Route path="admin/users" element={
+          <AdminRoute> {/* pelkkä admini näkymä */}
+            <UserList />
+          </AdminRoute>
+      } />
+
+      <Route path="auth" element={<Auth />} />
         <Route path="users" element={
           <PrivateRoute>
             <UserManagement />
           </PrivateRoute>
-        } />
+      } />
       </Route>
+
     </Routes>
   </HashRouter>
 );
